@@ -1,0 +1,117 @@
+﻿
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+
+
+@model UplDispSaveImg.Models.UploadDispImgModel
+@{
+
+    Layout = null;
+}
+@{
+    UplDispSaveImg.UploadImageEntities db = new UplDispSaveImg.UploadImageEntities();
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+
+    <p><h2 style="color:#740b75">IMAGE UPLOAD</h2></p>
+
+</head>
+<body>
+
+    @using (Html.BeginForm("SaveImages", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div>
+            <table>
+
+                <tr>
+                    <td>
+                        <input type="file" name="UploadedImage" id="UploadedImage" accept="image/*" />
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td style="color:#470448">
+                        <br />
+                        <input type="submit" id="Upload" value="Upload" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color:red">
+
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+
+                            <div class="error">
+                                <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@ViewBag.ErrorMessage </p></h4>
+                            </div>
+
+                        }
+
+                        @if (ViewBag.SuccessMessage != null)
+                        {
+
+                            <div class="success">
+                                <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@ViewBag.SuccessMessage </p></h4>
+                            </div>
+
+                        }
+
+                    </td>
+                </tr>
+            </table>
+            <h3> <p style="color:#130cba">IMAGES IN THE DATABASE</p></h3>
+
+
+            @foreach (var ImageDetails in db.ImageUploadTables)
+            {
+                if (ImageDetails.ByteValue != null)
+                {
+                    var base64 = Convert.ToBase64String(ImageDetails.ByteValue);
+                    var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                    <img src='@imgsrc' style="max-width:100px;max-height:100px" />
+
+                }
+            }
+
+        </div>
+    }
+    <script type="text/javascript">
+        $("body").on("click", "#Upload", function () {
+            //If Upload Button is clicked without choosing any file
+
+            if ($('#UploadedImage').val() == "") {
+                alert("Please select the file to Upload");
+                return false;
+            }
+            //If any file other than png jpg ipeg is chosen
+            var ext = $('#UploadedImage').val().split('.').pop().toLowerCase();
+            if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1) {
+                alert('File Format Not Supported');
+                $("#UploadedImage").val(null);
+                return false;
+            }
+        });
+
+    </script>
+
+
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(".error").show();
+        setTimeout(function () { $(".error").hide(); }, 4000);
+        $(".success").show();
+        setTimeout(function () { $(".success").hide(); }, 4000);
+    </script>
+
+
+
+</body>
+</html>
+
+
+
