@@ -55,7 +55,7 @@ namespace UplDispSaveImg.Controllers
 
             return RedirectToAction("SaveImages");
         }
-
+        //Delete an uploaded image
         public ActionResult Delete(int id)
         {
             UploadImageEntities DbCOntext = new UploadImageEntities();
