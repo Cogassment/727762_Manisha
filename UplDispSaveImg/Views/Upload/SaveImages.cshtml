@@ -1,112 +1,148 @@
-﻿
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="~/Scripts/jquery.validate.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
 @model UplDispSaveImg.Models.UploadDispImgModel
 @{
-
     Layout = null;
 }
+
 @{
+
     UplDispSaveImg.UploadImageEntities db = new UplDispSaveImg.UploadImageEntities();
 
 }
 <!DOCTYPE html>
 <html>
 <head>
-
     <p><h2 style="color:#740b75">IMAGE UPLOAD</h2></p>
+    <script>
+        function del(a) {
+            if (confirm("Are you sure want to delete this image ?")) {
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "/Upload/Delete",
+                        data: {
+                            id: a
+                        },
+                        dataType: "json",
+                    });
+            }
+        }
 
+    </script>
 </head>
 <body>
-
     @using (Html.BeginForm("SaveImages", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         <div>
             <table>
-
                 <tr>
                     <td>
-                        <input type="file" name="UploadedImage" id="UploadedImage" accept="image/*" />
+                        <input type="file" name="uploadedimage" id="uploadedimage" accept="image/*" />
                     </td>
-
                 </tr>
-
                 <tr>
                     <td style="color:#470448">
                         <br />
+                        <div>
+                        </div>
                         <input type="submit" id="Upload" value="Upload" />
                     </td>
                 </tr>
                 <tr>
                     <td style="color:red">
-
-                        @if (ViewBag.ErrorMessage != null)
+                        @if (TempData["ErrorMessage"] != null)
                         {
-
                             <div class="error">
-                                <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@ViewBag.ErrorMessage </p></h4>
+                                <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@TempData["ErrorMessage"] </p></h4>
                             </div>
 
                         }
-
-                        @if (ViewBag.SuccessMessage != null)
+                        @if (TempData["SuccessMessage"] != null)
                         {
-
                             <div class="success">
-                                <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@ViewBag.SuccessMessage </p></h4>
+                                <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@TempData["SuccessMessage"] </p></h4>
                             </div>
-
                         }
-
                     </td>
                 </tr>
             </table>
+
             <h3> <p style="color:#130cba">IMAGES IN THE DATABASE</p></h3>
+            @{
 
-
-            @foreach (var ImageDetails in db.ImageUploadTables)
-            {
-                if (ImageDetails.ByteValue != null)
+                try
                 {
-                    var base64 = Convert.ToBase64String(ImageDetails.ByteValue);
-                    var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
-                    <img src='@imgsrc' style="max-width:100px;max-height:100px" />
-
+                    foreach (var ImageDetails in db.ImageUploadTables)
+                    {
+                        if (ImageDetails.ByteValue != null)
+                        {
+                            var id1 = ImageDetails.Id;
+                            var base64 = Convert.ToBase64String(ImageDetails.ByteValue);
+                            var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                            <img src='@imgsrc' style="max-width:100px;max-height:100px" />
+                            <button onclick="del(@id1)">Delete</button>
+                        }
+                    }
                 }
+                catch (Exception e) { }
             }
 
         </div>
     }
+
     <script type="text/javascript">
+
         $("body").on("click", "#Upload", function () {
             //If Upload Button is clicked without choosing any file
+            if ($('#uploadedimage').val() == "") {
+                $("#errortext").text('Please select the file to Upload');
+                $("#alertpopup").click();
 
-            if ($('#UploadedImage').val() == "") {
-                alert("Please select the file to Upload");
                 return false;
             }
-            //If any file other than png jpg ipeg is chosen
-            var ext = $('#UploadedImage').val().split('.').pop().toLowerCase();
+            //If any file other than png jpg jpeg is chosen
+            var ext = $('#uploadedimage').val().split('.').pop().toLowerCase();
             if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1) {
-                alert('File Format Not Supported');
-                $("#UploadedImage").val(null);
+                $("#errortext").text('File Format Not Supported');
+                $("#alertpopup").click();
+
+                $("#uploadedimage").val(null);
                 return false;
             }
         });
 
     </script>
-
     <script src="~/Scripts/jquery-1.10.2.js"></script>
     <script type="text/javascript">
         $(".error").show();
-        setTimeout(function () { $(".error").hide(); }, 4000);
+        setTimeout(function () { $(".error").hide(); }, 3000);
         $(".success").show();
-        setTimeout(function () { $(".success").hide(); }, 4000);
+        setTimeout(function () { $(".success").hide(); }, 3000);
     </script>
-
+    <div class="container">
+        <button type="button" id="alertpopup" hidden data-toggle="modal" data-target="#myModal"></button>
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="errortext">Please select the file to Upload</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-
 
 
