@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
@@ -11,34 +12,56 @@ namespace UplDispSaveImg.Controllers
         {
             return View();
         }
+        /// <summary>
+        /// /
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="UploadedImage"></param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult SaveImages(ImageUploadTable table, HttpPostedFileBase UploadedImage)
+        public ActionResult SaveImages(ImageUploadTable image, HttpPostedFileBase uploadedimage)
         {
-            if (UploadedImage != null && UploadedImage.ContentLength > 0)
+            if (uploadedimage != null && uploadedimage.ContentLength > 0)
             {
-                UploadImageEntities DbCOntext = new UploadImageEntities();
-                // Byte Conversion
-                table.ByteValue = new byte[UploadedImage.ContentLength];
-                UploadedImage.InputStream.Read(table.ByteValue, 0, UploadedImage.ContentLength);
-                table.ImageFileName = UploadedImage.FileName;
-                //Check if byte value already exists in the table and assign the value to filecheck
-                var filecheck = DbCOntext.ImageUploadTables.Where(i => i.ByteValue == table.ByteValue).FirstOrDefault();
-                if (filecheck != null)
+                try
                 {
-                    ViewBag.ErrorMessage = "Image Already Exists";
-                    ViewBag.SuccessMessage = "";
+                    UploadImageEntities DbCOntext = new UploadImageEntities();
+                    // Byte Conversion
+                    image.ByteValue = new byte[uploadedimage.ContentLength];
+                    uploadedimage.InputStream.Read(image.ByteValue, 0, uploadedimage.ContentLength);
+                    image.ImageFileName = uploadedimage.FileName;
+                    //Check if byte value already exists in the table and assign the value to filecheck
+                    var filecheck = DbCOntext.ImageUploadTables.Where(i => i.ByteValue == image.ByteValue).FirstOrDefault();
+                    if (filecheck != null)
+                    {
+                        TempData["ErrorMessage"] = "Image Already Exists";
+                        TempData["SuccessMessage"] = "";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "";
+                        //Save image into database
+                        DbCOntext.ImageUploadTables.Add(image);
+                        DbCOntext.SaveChanges();
+                        TempData["SuccessMessage"] = "Uploaded Successfully";
+
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    ViewBag.ErrorMessage = "";
-                    //Save image into database
-                    DbCOntext.ImageUploadTables.Add(table);
-                    DbCOntext.SaveChanges();
-                    ViewBag.SuccessMessage = "Uploaded Successfully";
 
                 }
             }
 
+            return RedirectToAction("SaveImages");
+        }
+
+        public ActionResult Delete(int id)
+        {
+            UploadImageEntities DbCOntext = new UploadImageEntities();
+            ImageUploadTable image = DbCOntext.ImageUploadTables.Where(x => x.Id == id).FirstOrDefault();
+            DbCOntext.ImageUploadTables.Remove(image);
+            DbCOntext.SaveChanges();
             return View("SaveImages");
         }
     }
