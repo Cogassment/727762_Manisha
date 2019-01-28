@@ -8,16 +8,19 @@
 @{
     Layout = null;
 }
+
 @{
+
     UplDispSaveImg.UploadImageEntities db = new UplDispSaveImg.UploadImageEntities();
+
 }
 <!DOCTYPE html>
 <html>
 <head>
-    <p><h2 style="color:#740b75">IMAGE UPLOAD</h2></p>
+    <p><h3 style="color:#740b75">IMAGE UPLOAD</h3></p>
     <script>
         function del(a) {
-            if (confirm("Are you sure want to delete this image ?")) {
+            if (confirm('@Resource.Delete')) {
                 $.ajax(
                     {
                         type: "POST",
@@ -29,6 +32,7 @@
                     });
             }
         }
+
     </script>
 </head>
 <body>
@@ -68,8 +72,9 @@
                 </tr>
             </table>
 
-            <h3> <p style="color:#130cba">IMAGES IN THE DATABASE</p></h3>
+            <h2> <p style="color:#130cba" align="center">IMAGES IN THE DATABASE</p></h2>
             @{
+
                 try
                 {
                     foreach (var ImageDetails in db.ImageUploadTables)
@@ -95,7 +100,7 @@
         $("body").on("click", "#Upload", function () {
             //If Upload Button is clicked without choosing any file
             if ($('#uploadedimage').val() == "") {
-                $("#errortext").text('Please select the file to Upload');
+                $("#errortext").text('@Resource.UploadButton');
                 $("#alertpopup").click();
 
                 return false;
@@ -103,9 +108,8 @@
             //If any file other than png jpg jpeg is chosen
             var ext = $('#uploadedimage').val().split('.').pop().toLowerCase();
             if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1) {
-                $("#errortext").text('File Format Not Supported');
+                $("#errortext").text('@Resource.FileFormat');
                 $("#alertpopup").click();
-
                 $("#uploadedimage").val(null);
                 return false;
             }
@@ -139,5 +143,3 @@
     </div>
 </body>
 </html>
-
-
