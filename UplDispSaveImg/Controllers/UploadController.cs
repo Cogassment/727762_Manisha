@@ -34,7 +34,7 @@ namespace UplDispSaveImg.Controllers
                     var filecheck = DbCOntext.ImageUploadTables.Where(i => i.ByteValue == image.ByteValue).FirstOrDefault();
                     if (filecheck != null)
                     {
-                        TempData["ErrorMessage"] = "Image Already Exists";
+                        TempData["ErrorMessage"] = Resource.ErrorMessage;
                         TempData["SuccessMessage"] = "";
                     }
                     else
@@ -43,7 +43,7 @@ namespace UplDispSaveImg.Controllers
                         //Save image into database
                         DbCOntext.ImageUploadTables.Add(image);
                         DbCOntext.SaveChanges();
-                        TempData["SuccessMessage"] = "Uploaded Successfully";
+                        TempData["SuccessMessage"] = Resource.SuccessMessage;
 
                     }
                 }
@@ -58,10 +58,18 @@ namespace UplDispSaveImg.Controllers
         //Delete an uploaded image
         public ActionResult Delete(int id)
         {
-            UploadImageEntities DbCOntext = new UploadImageEntities();
-            ImageUploadTable image = DbCOntext.ImageUploadTables.Where(x => x.Id == id).FirstOrDefault();
-            DbCOntext.ImageUploadTables.Remove(image);
-            DbCOntext.SaveChanges();
+            try
+            {
+                UploadImageEntities DbCOntext = new UploadImageEntities();
+                ImageUploadTable image = DbCOntext.ImageUploadTables.Where(x => x.Id == id).FirstOrDefault();
+                DbCOntext.ImageUploadTables.Remove(image);
+                DbCOntext.SaveChanges();
+              
+            }
+            catch(Exception e)
+            {
+
+            }
             return View("SaveImages");
         }
     }
