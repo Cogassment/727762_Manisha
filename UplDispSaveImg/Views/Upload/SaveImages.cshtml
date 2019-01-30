@@ -1,8 +1,10 @@
+
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="~/Scripts/jquery.validate.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 @model UplDispSaveImg.Models.UploadDispImgModel
 @{
@@ -30,6 +32,7 @@
                         },
                         dataType: "json",
                     });
+                window.location = "/Upload/SaveImages";
             }
         }
 
@@ -60,7 +63,6 @@
                             <div class="error">
                                 <h4> <p style="color:red; font-size:100%; font-family:'Times New Roman', Times, serif;">@TempData["ErrorMessage"] </p></h4>
                             </div>
-
                         }
                         @if (TempData["SuccessMessage"] != null)
                         {
@@ -72,7 +74,7 @@
                 </tr>
             </table>
 
-            <h2> <p style="color:#130cba" align="center">IMAGES IN THE DATABASE</p></h2>
+            <h2 style="color:#130cba" align="center">IMAGES IN THE DATABASE</h2>
             @{
 
                 try
@@ -84,8 +86,11 @@
                             var id1 = ImageDetails.Id;
                             var base64 = Convert.ToBase64String(ImageDetails.ByteValue);
                             var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
-                            <img src='@imgsrc' style="max-width:100px;max-height:100px" />
-                            <button onclick="del(@id1)">Delete</button>
+                            <div class="container">
+                                <img src='@imgsrc' style="max-width:300px;max-height:300px" />
+                                <button class="close" data-dismiss="container" onclick="del(@id1)" style="background-color:aqua;position:absolute;width:20px;height:20px">&times;</button>
+                            </div>
+                            <br />
                         }
                     }
                 }
