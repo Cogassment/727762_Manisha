@@ -64,13 +64,14 @@ namespace UplDispSaveImg.Controllers
                 ImageUploadTable image = DbCOntext.ImageUploadTables.Where(x => x.Id == id).FirstOrDefault();
                 DbCOntext.ImageUploadTables.Remove(image);
                 DbCOntext.SaveChanges();
-              
+                return RedirectToAction("SaveImages");
+
             }
             catch(Exception e)
             {
 
             }
-            return View("SaveImages");
+            return RedirectToAction("SaveImages");
         }
     }
 }
